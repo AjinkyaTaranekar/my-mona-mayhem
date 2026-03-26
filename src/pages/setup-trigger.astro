@@ -1,0 +1,24 @@
+---
+// This file triggers the setup during build
+import { exec } from 'child_process';
+import { promisify } from 'util';
+
+const execAsync = promisify(exec);
+
+try {
+  const result = await execAsync('node setup.js', { cwd: process.cwd() });
+  console.log('Setup completed:', result.stdout);
+} catch (err) {
+  console.error('Setup failed:', err);
+}
+---
+
+<html>
+  <head>
+    <title>Setup</title>
+  </head>
+  <body>
+    <h1>Setup Triggered</h1>
+    <p>Check console for results</p>
+  </body>
+</html>
