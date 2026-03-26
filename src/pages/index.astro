@@ -11,7 +11,407 @@
 		<title>Mona Mayhem</title>
 	</head>
 	<body>
-		<h1>Mona Mayhem</h1>
-		<p>Welcome to Mona Mayhem! Time to build a GitHub Contribution Battle Arena.</p>
+		<main>
+			<h1>Mona Mayhem</h1>
+			<p class="subtitle">GitHub Contribution Battle Arena</p>
+
+			<form id="battle-form">
+				<div class="input-group">
+					<label for="player1">Player 1 GitHub Username</label>
+					<input 
+						type="text" 
+						id="player1" 
+						name="player1"
+						placeholder="e.g., torvalds"
+						required
+					/>
+				</div>
+
+				<div class="input-group">
+					<label for="player2">Player 2 GitHub Username</label>
+					<input 
+						type="text" 
+						id="player2" 
+						name="player2"
+						placeholder="e.g., gvanrossum"
+						required
+					/>
+				</div>
+
+				<button type="submit" id="battle-btn" class="battle-button">⚔️ BATTLE ⚔️</button>
+			</form>
+
+			<div id="error-message" class="error-message"></div>
+
+			<div id="results-container" style="display: none;">
+				<div id="battle-results" class="results-grid">
+					<!-- Results rendered here -->
+				</div>
+				<button id="reset-btn" class="reset-button">↻ Battle Again</button>
+			</div>
+
+			<div id="loading-message" class="loading-message" style="display: none;">
+				⚔️ Battling... ⚔️
+			</div>
+		</main>
+
+		<style>
+			main {
+				max-width: 900px;
+				margin: 0 auto;
+				padding: 2rem 1rem;
+				font-family: Arial, sans-serif;
+			}
+
+			h1 {
+				text-align: center;
+				font-size: 2.5rem;
+				margin: 0 0 0.5rem 0;
+				color: #333;
+			}
+
+			.subtitle {
+				text-align: center;
+				font-size: 1.2rem;
+				color: #666;
+				margin: 0 0 2rem 0;
+			}
+
+			#battle-form {
+				display: flex;
+				flex-direction: column;
+				gap: 1.5rem;
+				margin-bottom: 2rem;
+				background: #f9f9f9;
+				padding: 2rem;
+				border-radius: 8px;
+				border: 1px solid #ddd;
+			}
+
+			.input-group {
+				display: flex;
+				flex-direction: column;
+				gap: 0.5rem;
+			}
+
+			label {
+				font-weight: bold;
+				color: #333;
+				font-size: 1rem;
+			}
+
+			input {
+				padding: 0.75rem;
+				border: 1px solid #ccc;
+				border-radius: 4px;
+				font-size: 1rem;
+				font-family: inherit;
+			}
+
+			input:focus {
+				outline: none;
+				border-color: #0066cc;
+				box-shadow: 0 0 4px rgba(0, 102, 204, 0.3);
+			}
+
+			.battle-button {
+				padding: 1rem;
+				font-size: 1.2rem;
+				font-weight: bold;
+				background-color: #ff6b6b;
+				color: white;
+				border: none;
+				border-radius: 4px;
+				cursor: pointer;
+				transition: background-color 0.2s;
+				margin-top: 0.5rem;
+			}
+
+			.battle-button:hover:not(:disabled) {
+				background-color: #ff5252;
+			}
+
+			.battle-button:disabled {
+				background-color: #ccc;
+				cursor: not-allowed;
+			}
+
+			.error-message {
+				color: #d32f2f;
+				padding: 1rem;
+				margin-bottom: 1rem;
+				border: 1px solid #ffcdd2;
+				border-radius: 4px;
+				background-color: #ffebee;
+				display: none;
+				font-weight: bold;
+			}
+
+			.error-message.show {
+				display: block;
+			}
+
+			.loading-message {
+				text-align: center;
+				font-size: 1.5rem;
+				padding: 2rem;
+				color: #666;
+			}
+
+			.loading-message.show {
+				display: block;
+			}
+
+			#results-container {
+				background: #f9f9f9;
+				padding: 2rem;
+				border-radius: 8px;
+				border: 1px solid #ddd;
+			}
+
+			#results-container.show {
+				display: block;
+			}
+
+			.results-grid {
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+				gap: 2rem;
+				margin-bottom: 2rem;
+			}
+
+			.player-stats {
+				background: white;
+				padding: 1.5rem;
+				border-radius: 4px;
+				border: 1px solid #ddd;
+				text-align: center;
+			}
+
+			.player-name {
+				font-size: 1.3rem;
+				font-weight: bold;
+				margin-bottom: 1rem;
+				color: #333;
+			}
+
+			.player-contributions {
+				font-size: 2rem;
+				color: #ff6b6b;
+				font-weight: bold;
+				margin-bottom: 0.5rem;
+			}
+
+			.contributions-label {
+				color: #666;
+				font-size: 0.9rem;
+			}
+
+			.winner-announcement {
+				grid-column: 1 / -1;
+				text-align: center;
+				padding: 2rem;
+				background: #fff9e6;
+				border: 2px solid #ffd700;
+				border-radius: 4px;
+				font-size: 1.5rem;
+				font-weight: bold;
+				color: #333;
+			}
+
+			.winner-announcement.tie {
+				background: #e6e6ff;
+				border-color: #6666ff;
+			}
+
+			.reset-button {
+				padding: 0.75rem 1.5rem;
+				font-size: 1rem;
+				background-color: #0066cc;
+				color: white;
+				border: none;
+				border-radius: 4px;
+				cursor: pointer;
+				transition: background-color 0.2s;
+				align-self: center;
+			}
+
+			.reset-button:hover {
+				background-color: #0052a3;
+			}
+
+			@media (max-width: 600px) {
+				.results-grid {
+					grid-template-columns: 1fr;
+				}
+
+				h1 {
+					font-size: 1.8rem;
+				}
+
+				.player-contributions {
+					font-size: 1.5rem;
+				}
+			}
+		</style>
+
+		<script>
+			const battleForm = document.getElementById('battle-form');
+			const battleBtn = document.getElementById('battle-btn');
+			const player1Input = document.getElementById('player1');
+			const player2Input = document.getElementById('player2');
+			const resultsContainer = document.getElementById('results-container');
+			const battleResults = document.getElementById('battle-results');
+			const resetBtn = document.getElementById('reset-btn');
+			const errorMessage = document.getElementById('error-message');
+			const loadingMessage = document.getElementById('loading-message');
+
+			battleForm.addEventListener('submit', async (e) => {
+				e.preventDefault();
+				await handleBattle();
+			});
+
+			resetBtn.addEventListener('click', () => {
+				resetForm();
+			});
+
+			async function handleBattle() {
+				const player1 = player1Input.value.trim();
+				const player2 = player2Input.value.trim();
+
+				// Clear previous messages
+				errorMessage.textContent = '';
+				errorMessage.classList.remove('show');
+
+				// Validate inputs
+				if (!player1 || !player2) {
+					showError('Please enter both usernames');
+					return;
+				}
+
+				if (player1 === player2) {
+					showError('Please enter two different usernames');
+					return;
+				}
+
+				// Show loading state
+				battleBtn.disabled = true;
+				loadingMessage.classList.add('show');
+				resultsContainer.style.display = 'none';
+
+				try {
+					// Fetch both contributions in parallel
+					const [data1, data2] = await Promise.all([
+						fetchContributions(player1),
+						fetchContributions(player2),
+					]);
+
+					// Extract contribution counts
+					const count1 = extractContributionCount(data1);
+					const count2 = extractContributionCount(data2);
+
+					// Display results
+					displayResults(player1, count1, player2, count2);
+				} catch (error) {
+					showError(error instanceof Error ? error.message : 'An error occurred during battle');
+				} finally {
+					battleBtn.disabled = false;
+					loadingMessage.classList.remove('show');
+				}
+			}
+
+			async function fetchContributions(username: string) {
+				const response = await fetch(`/api/contributions/${username}`);
+				if (!response.ok) {
+					const error = await response.json();
+					throw new Error(
+						response.status === 404 
+							? `User "${username}" not found`
+							: error.error || `Error fetching ${username}`
+					);
+				}
+				return response.json();
+			}
+
+			function extractContributionCount(data: any): number {
+				// Try to find total contributions in various possible formats
+				if (typeof data.total === 'number') {
+					return data.total;
+				}
+				if (typeof data.totalContributions === 'number') {
+					return data.totalContributions;
+				}
+				// Fallback: if data is an array, sum all values
+				if (Array.isArray(data)) {
+					return data.reduce((sum, val) => sum + (val.count || val.contributions || 0), 0);
+				}
+				// If data is an object with contribution data, try to sum
+				if (typeof data === 'object' && data !== null) {
+					const values = Object.values(data).filter(v => typeof v === 'number');
+					if (values.length > 0) {
+						return values.reduce((sum, v) => sum + (v as number), 0);
+					}
+				}
+				return 0;
+			}
+
+			function displayResults(player1: string, count1: number, player2: string, count2: number) {
+				let winner: string | null = null;
+				if (count1 > count2) {
+					winner = player1;
+				} else if (count2 > count1) {
+					winner = player2;
+				}
+
+				let resultsHTML = `
+					<div class="player-stats">
+						<div class="player-name">👤 ${escapeHtml(player1)}</div>
+						<div class="player-contributions">${count1.toLocaleString()}</div>
+						<div class="contributions-label">contributions</div>
+					</div>
+					<div class="player-stats">
+						<div class="player-name">👤 ${escapeHtml(player2)}</div>
+						<div class="player-contributions">${count2.toLocaleString()}</div>
+						<div class="contributions-label">contributions</div>
+					</div>
+				`;
+
+				if (winner) {
+					resultsHTML += `
+						<div class="winner-announcement">
+							🏆 ${escapeHtml(winner)} wins! 🏆
+						</div>
+					`;
+				} else {
+					resultsHTML += `
+						<div class="winner-announcement tie">
+							⚖️ It's a tie! Both have ${count1.toLocaleString()} contributions! ⚖️
+						</div>
+					`;
+				}
+
+				battleResults.innerHTML = resultsHTML;
+				resultsContainer.style.display = 'block';
+			}
+
+			function showError(message: string) {
+				errorMessage.textContent = message;
+				errorMessage.classList.add('show');
+			}
+
+			function resetForm() {
+				battleForm.reset();
+				resultsContainer.style.display = 'none';
+				errorMessage.textContent = '';
+				errorMessage.classList.remove('show');
+				player1Input.focus();
+			}
+
+			function escapeHtml(text: string): string {
+				const div = document.createElement('div');
+				div.textContent = text;
+				return div.innerHTML;
+			}
+		</script>
 	</body>
 </html>
